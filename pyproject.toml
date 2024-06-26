@@ -5,6 +5,7 @@ description = "Add your description here"
 authors = [
     { name = "Philippe Miron", email = "philippemiron@gmail.com" }
 ]
+
 dependencies = [
     "streamlit>=1.36.0",
     "google-generativeai>=0.7.0",
