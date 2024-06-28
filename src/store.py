@@ -1,29 +1,27 @@
 """
-Functions for VectorClass
+Module containing VectorClass utility
 """
 
 
-def VectorClass():
-    """asdaskjdha akjshdakjshd akjshdakjsh akjshd akjshd akjshdakj shakjshd"""
+class VectorClass:
+    """Class for VectorClass"""
 
     def __init__(self, vector, prompt):
         self.vector = vector
         self.prompt = prompt
 
+    def init_embedding():
+        """Init vector stor
 
-def init_vector_store():
-    """_summary_
+        Returns:
+            _type_: _description_
+        """
+        return []
 
-    Returns:
-        _type_: _description_
-    """
-    return []
+    def store_vector(vector, prompt):
+        """Save embedding model
 
-
-def store_vector(vector, prompt):
-    """_summary_
-
-    Args:
-        vector (_type_): _description_
-        prompt (_type_): _description_
-    """
+        Args:
+            vector (_type_): _description_
+            prompt (_type_): _description_
+        """
