@@ -33,6 +33,7 @@ dev-dependencies = [
 
 [tool.rye.scripts]
 docs = { cmd = "sphinx-build -M html docs docs/_build -W --keep-going"}
+embeddings = { cmd = "python src/store.py"}
 
 [tool.hatch.metadata]
 allow-direct-references = true
