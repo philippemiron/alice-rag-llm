@@ -32,6 +32,7 @@ dev-dependencies = [
 ]
 
 [tool.rye.scripts]
+clean = { cmd = "rm -Rf docs/_build/ docs/_autosummary/ src/store src/documents"}
 docs = { cmd = "sphinx-build -M html docs docs/_build -W --keep-going"}
 embeddings = { cmd = "python src/store.py"}
 
