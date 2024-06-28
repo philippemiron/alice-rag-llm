@@ -23,14 +23,26 @@ Document Retrieval (VectorStore)
 
 We utilize `LlamaIndex <https://www.llamaindex.ai/>`_ for ingesting the documents, and creating easily creating the vector store. The embedding model used is `BAAI/bge-small-en-v1.5 <https://huggingface.co/BAAI/bge-small-en-v1.5>`_.
 
-When a user provides a `{query}`, it is appended to the following prefix: `Represent this sentence for searching relevant passages: {query}`, as recommended in `BAAI's documentation <https://model.baai.ac.cn/model-detail/100112#usage>`_.
+Since this RAG POC contains a single book, *Alice's Adventures in Wonderland*, the documents (`src/documents/`) and the embeddings (`src/store`) are generated once and stored in the repository. The vector store is created by running the following command from the root directory:
 
-Note: For this proof of concept, I did not explore many different embedding models. The selected model was chosen based on a recommendation from a RAG tutorial in the `LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval/>`_. In a real-world scenario, it would be beneficial to benchmark various models to optimize the user experience.
+>>> python src/store.py
+
+The `store.py` module contains two classes: `Book <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.Book>`_ and `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ to to load the document and interact with the vector store. The `Book` class contains the documents information. The `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ class is used to create the vector store, save or load the embeddings, and retrieve the most relevant passages for a given query.
+
+When a user provides a query, it is first appended as such:
+
+.. code-block:: python
+
+    f"Represent this sentence for searching relevant passages: {query}"
+
+before retrieving top passages from the vector database, as recommended in `BAAI's documentation <https://model.baai.ac.cn/model-detail/100112#usage>`_.
+
+*Note*: For this proof of concept, I did not explore many different embedding models. The selected model was chosen for speed and based on a RAG tutorial in the `LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval/>`_. In a real-world scenario, it would be beneficial to benchmark various models to optimize the user experience.
 
 Prompt Generation
 -----------------
 
-We combine results from vector store retrieval with the user's query to generate a prompt for the selected Gemini model.
+We combine results from vector database retrieval with the user's query to generate a prompt for the selected Gemini model.
 
 The prompt was designed based on guidelines provided in the `Gemini documentation <https://model.baai.ac.cn/model-detail/100112#usage>`_ and this insightful article on understanding `RAG <https://medium.com/@saurabhgssingh/understanding-rag-building-a-rag-system-from-scratch-with-gemini-api-b11ad9fc1bf7>`_ architecture.
 
@@ -38,7 +50,7 @@ Specifically, the top relevant passages and the user query are concatenated in t
 
 .. code-block:: python
 
-    def make_rag_prompt(query: str, relevant_passages: list[str]) -> str:
+    def make_rag_prompt(query: str, passages: list[str]) -> str:
         """Generate the RAG prompt
 
         Args:
@@ -48,9 +60,9 @@ Specifically, the top relevant passages and the user query are concatenated in t
         Returns:
             str: the prompt to pass to the LLM API
         """
-        escaped_passages = " ".join(
-            passage.replace("'", "").replace('"', "").replace("\n", " ")
-            for passage in relevant_passages
+
+        escaped_passages = "\n\n".join(
+            passage.replace("\r", " ").replace("\n", " ") for passage in passages
         )
 
         prompt = (
@@ -59,9 +71,9 @@ Specifically, the top relevant passages and the user query are concatenated in t
             "being comprehensive, including all relevant background information. However, you "
             "are talking to a non-technical audience, so be sure to break down complicated "
             "concepts and strike a friendly and conversational tone. If the passages are "
-            "irrelevant to the answer, you may ignore them.\n"
-            f"QUESTION: '{query}'\n"
-            f"PASSAGES: '{escaped_passages}'\n\n"
+            "irrelevant to the answer, you may ignore them.\n\n"
+            f"QUESTION: {query}\n\n"
+            f"PASSAGES: {escaped_passages}\n\n"
             "ANSWER:\n"
         )
 
@@ -76,4 +88,4 @@ Choices of three models from the Gemini's family are available. The choice of mo
 - Gemini 1.5 Pro
 - Gemini 1.5 Flash
 
-The first model is from the previous generation, it is slightly faster but returns simpler and less accurate answer as the newer models. The two latest models are more accurate, in practice would be more expensive, and are slightly slower. The default model is set to `Gemini 1.5 Flash`, which provides fast and versatile performance across diverse variety of tasks. The user can change the model on the left sidebar of the interface to optimize their experience.
+The first model, from the previous generation, is slightly faster but provides simpler and less accurate answers compared to the newer models. The two latest models offer higher accuracy but are generally more expensive and slightly slower.  The default model is set to `Gemini 1.5 Flash`, which provides fast and versatile performance across diverse variety of tasks. The user can change the model on the left sidebar of the interface to optimize their experience.
