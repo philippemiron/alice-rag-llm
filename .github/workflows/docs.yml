@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Deploy
+    name: Build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -40,7 +40,18 @@ jobs:
     - name: Build docs
       shell: bash -l {0}
       run: rye run docs
-    - name: Deploy
-      uses: JamesIves/github-pages-deploy-action@v4
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
       with:
-        folder: docs/_build/html
+        path: docs/_build/html
+  deploy:
+    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
