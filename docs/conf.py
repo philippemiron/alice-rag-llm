@@ -5,7 +5,7 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath("../src"))
+sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -38,3 +38,6 @@ html_theme = "sphinx_book_theme"
 html_logo = "logo.webp"
 html_favicon = "favicon.ico"
 html_static_path: list[str] = []
+
+# sphinx-copybutton settings
+copybutton_exclude = ".linenos, .gp"  # don't copy prompts or line numbers
