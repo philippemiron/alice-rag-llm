@@ -1,0 +1,52 @@
+name: Docs
+
+on:
+  release:
+    types:
+      - published
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.12"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install the latest version of rye
+      uses: eifinger/setup-rye@v3
+    - name: Sync dependencies
+      shell: bash -l {0}
+      run: rye sync
+    - name: Build docs
+      shell: bash -l {0}
+      run: rye run docs
+    - name: Upload HTML artificat
+      uses: actions/upload-artifact@v4
+      with:
+        name: DocumentationHTML
+        path: docs/_build/html/
+    - name: Commit to gh-pages
+      run: |
+        git clone https://github.com/ammaraskar/sphinx-action-test.git --branch gh-pages --single-branch gh-pages
+        cp -r docs/_build/html/* gh-pages/
+        cd gh-pages
+        touch .nojekyll
+        echo clouddrift.org > CNAME
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update documentation" -a || true
+        # The above command will fail if no changes were present, so we ignore
+        # that.
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        directory: gh-pages
+        force: true
