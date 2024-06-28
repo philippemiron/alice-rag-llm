@@ -12,15 +12,20 @@ import streamlit as st
 from store import VectorStore
 
 
-def make_rag_prompt(query: str, passages: list[str]) -> str:
+def make_rag_prompt(user_query: str, passages: list[str]) -> str:
     """Generate the RAG prompt
 
-    Args:
-        query (str): user query
-        relevant_passages (list[str]): list of relevant passages obtained from the index
+    Parameters
+    ----------
+    user_query : str
+        The user query.
+    passages : list[str]
+        List of relevant passages obtained from the index.
 
-    Returns:
-        str: the prompt to pass to the LLM API
+    Returns
+    -------
+    prompt : str
+        The prompt to pass to the LLM API
     """
 
     escaped_passages = "\n\n".join(
@@ -34,7 +39,7 @@ def make_rag_prompt(query: str, passages: list[str]) -> str:
         "are talking to a non-technical audience, so be sure to break down complicated "
         "concepts and strike a friendly and conversational tone. If the passages are "
         "irrelevant to the answer, you may ignore them.\n\n"
-        f"QUESTION: {query}\n\n"
+        f"QUESTION: {user_query}\n\n"
         f"PASSAGES: {escaped_passages}\n\n"
         "ANSWER:\n"
     )
@@ -43,13 +48,18 @@ def make_rag_prompt(query: str, passages: list[str]) -> str:
 
 
 def call_llm(user_query: str) -> Generator[str, None, None]:
-    """LLM wrapper
+    """From the user query this retrieves the context, setup the prompt,
+    and call the LLM API to generate the response.
 
-    Args:
-        prompt (str): _description_
+    Parameters
+    ----------
+    user_query : str
+        The user query.
 
-    Yields:
-        Generator[str]: LLM response stream
+    Returns
+    -------
+    llm response : Generator[str]
+        Yields a string generator containing the live LLM response.
     """
     passages = st.session_state["vs"].query(user_query)
     prompt = make_rag_prompt(user_query, passages)
@@ -81,8 +91,8 @@ st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
 st.title("Alice RAG")
 
+# setup the session state
 DEFAULT_MODEL = "Gemini 1.5 Flash"
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "list_of_models" not in st.session_state:
@@ -129,6 +139,7 @@ with st.sidebar:
         ],
     )
 
+    # Initialize the selected model
     name = st.session_state["list_of_models"][st.session_state["model"]]["model_name"]
     st.session_state["llm"] = genai.GenerativeModel(model_name=name)
 
