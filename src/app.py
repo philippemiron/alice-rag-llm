@@ -52,10 +52,7 @@ def call_llm(user_query: str) -> Generator[str, None, None]:
         Generator[str]: LLM response stream
     """
     passages = st.session_state["vs"].query(user_query)
-
     prompt = make_rag_prompt(user_query, passages)
-
-    print(prompt)
 
     response = st.session_state["llm"].generate_content(prompt, stream=True)
     for chunk in response:
@@ -94,9 +91,8 @@ if "list_of_models" not in st.session_state:
 if "model" not in st.session_state:
     st.session_state["model"] = DEFAULT_MODEL
 if "vs" not in st.session_state:
-    vs = VectorStore()
-    vs.load_store()
-    st.session_state["vs"] = vs
+    st.session_state["vs"] = VectorStore()
+    st.session_state["vs"].load()
 
 with st.chat_message("assistant"):
     st.markdown(

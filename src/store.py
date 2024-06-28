@@ -11,6 +11,8 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
 
 class Book:
+    """Simple class to represent a book"""
+
     title: str
     url: str
     encoding: str | None = "utf-8"
@@ -19,6 +21,15 @@ class Book:
     def __init__(
         self, title: str, url: str, filename: str | None = None, encoding: str = "utf-8"
     ):
+        """Initialize a new book
+
+        Args:
+            title (str): title of the book
+            url (str): url to download the book
+            filename (str | None, optional): local filename. Defaults to None, which generate
+             the filename from the title.
+            encoding (str, optional): book's encoding. Defaults to "utf-8".
+        """
         self.title = title
         self.url = url
         self.filename = (
@@ -45,16 +56,16 @@ def load_documents(folder: str, books: list[Book]):
 
 
 class VectorStore:
+    """VectorStore class to handle the embedding store"""
+
     def __init__(
         self,
         documents_path: str = "documents",
         store_path: str = "store",
-        top_passages: int = 5,
     ):
         self.documents_path = documents_path
         self.store_path = store_path
-        self.top_passages = top_passages
-        self.indexer = None
+        self.index = None
 
         # embedding settings
         Settings.chunk_size = 1024
@@ -63,20 +74,19 @@ class VectorStore:
             model_name="BAAI/bge-small-en-v1.5",
         )
 
-    def load_store(self):
+    def load(self):
         """
-        Load the vector store from the specified path.
+        Reload the vector store from a previous state.
         """
         documents = StorageContext.from_defaults(
             persist_dir=os.path.join(os.path.dirname(__file__), self.store_path)
         )
 
-        index = load_index_from_storage(documents)
-        self.indexer = index.as_retriever(similarity_top_k=self.top_passages)
+        self.index = load_index_from_storage(documents)
 
-    def save_store(self):
+    def save(self):
         """
-        Save the vector store to the specified path.
+        Save the vector store locally.
         """
         dataset = SimpleDirectoryReader(self.documents_path).load_data()
         index = VectorStoreIndex.from_documents(dataset)
@@ -85,16 +95,20 @@ class VectorStore:
             os.makedirs(self.store_path)
         index.storage_context.persist(persist_dir=self.store_path)
 
-    def query(self, query: str) -> list[str]:
+    def query(
+        self,
+        query: str,
+        top_passages: int = 5,
+    ) -> list[str]:
         """
-        Query the vector store with the specified query.
+        Query the vector store with the specified query and returns the top passages.
         """
 
-        passages = self.indexer.retrieve(
+        passages = self.index.as_retriever(similarity_top_k=top_passages).retrieve(
             f"Represent this sentence for searching relevant passages: {query}"
         )
 
-        # return list of passages with their scores
+        # return list of similar passages
         return [p.node.text for p in passages]
 
 
@@ -114,4 +128,4 @@ if __name__ == "__main__":
     # create the vector store
     store_path = os.path.join(os.path.dirname(__file__), "store")
     vs = VectorStore(documents_path=documents_path, store_path=store_path)
-    vs.save_store()
+    vs.save()
