@@ -23,12 +23,17 @@ class Book:
     ):
         """Initialize a new book
 
-        Args:
-            title (str): title of the book
-            url (str): url to download the book
-            filename (str | None, optional): local filename. Defaults to None, which generate
-             the filename from the title.
-            encoding (str, optional): book's encoding. Defaults to "utf-8".
+        Parameters
+        ----------
+        title : str
+            Title of the book
+        url : str
+            The path or url to download the book
+        filename : str, optional
+            The local filename where to store the book. Default generates the
+            filename from the title.
+        encoding : str, optional
+            The book's encoding. Default to "utf-8".
         """
         self.title = title
         self.url = url
@@ -42,10 +47,14 @@ def load_documents(
     books: list[Book],
     folder: str = os.path.join(os.path.dirname(__file__), "documents"),
 ):
-    """Load documents from a file
+    """Retrieve the list of books and store them locally.
 
-    Returns:
-        _type_: _description_
+    Parameters
+    ----------
+    books : list[Book]
+        List of books to download
+    folder : str, optional
+        The folder where to store the books, by default `src/document`.
     """
 
     if not os.path.exists(folder):
@@ -59,7 +68,7 @@ def load_documents(
 
 
 class VectorStore:
-    """VectorStore class to handle the embedding store"""
+    """VectorStore class to handle the embedding database"""
 
     def __init__(
         self,
@@ -105,6 +114,13 @@ class VectorStore:
     ) -> list[str]:
         """
         Query the vector store with the specified query and returns the top passages.
+
+        Parameters
+        ----------
+        query : str
+            The user provided query.
+        top_passages : int, optional
+            The number of passages to return, default is 5.
         """
 
         passages = self.index.as_retriever(similarity_top_k=top_passages).retrieve(
@@ -116,8 +132,8 @@ class VectorStore:
 
 
 if __name__ == "__main__":
-    # when building the image, we can load the books,
-    # create the embeddings, and save it locally to
+    # when building the image, the books are downloaded,
+    # the embeddings is created, and everything is saved locally to
     # speed up starting time
 
     # defined list of books to load
