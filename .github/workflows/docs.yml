@@ -35,6 +35,9 @@ jobs:
     - name: Sync dependencies
       shell: bash -l {0}
       run: rye sync
+    - name: Generate embeddings
+      shell: bash -l {0}
+      run: rye run embeddings
     - name: Build docs
       shell: bash -l {0}
       run: rye run docs

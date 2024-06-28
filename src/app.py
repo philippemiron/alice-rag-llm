@@ -8,58 +8,11 @@ from typing import Generator
 
 import google.generativeai as genai
 import streamlit as st
-from llama_index.core import Settings, StorageContext, load_index_from_storage
-from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
-# heavily inspired from https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps
+from store import VectorStore
 
 
-# https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings/
-def init_vector_store() -> VectorIndexRetriever:
-    """Initialize the vector store
-
-    Returns:
-        VectorIndexRetriever: an object to query the index
-    """
-    # create a class to generate this and save to the image
-    # load book(s)
-    # build vector index
-    # save to disk
-    # Alice's Adventures in Wonderland
-
-    # url = "https://www.gutenberg.org/files/11/11-0.txt"
-    # response = requests.get(url)
-    # response.encoding = 'utf-8'
-    # return response.text
-
-    # from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
-    # from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-    # from llama_index.core import Settings
-    # Settings.chunk_size = 512
-    # Settings.chunk_overlap = 50
-    # Settings.embed_model = HuggingFaceEmbedding(
-    #     model_name="BAAI/bge-small-en-v1.5",
-    # )
-    # documents = SimpleDirectoryReader("data").load_data()
-    # index = VectorStoreIndex.from_documents(documents)
-    # index.storage_context.persist(persist_dir="store")
-
-    # https://model.baai.ac.cn/model-detail/100112
-    # Represent this sentence for searching relevant passages:
-    Settings.embed_model = HuggingFaceEmbedding(
-        model_name="BAAI/bge-small-en-v1.5",
-        cache_folder=os.path.join(os.path.dirname(__file__), "bge-small-en-v1.5/"),
-    )
-
-    documents = StorageContext.from_defaults(
-        persist_dir=os.path.join(os.path.dirname(__file__), "store")
-    )
-    index = load_index_from_storage(documents)
-    return index.as_retriever(similarity_top_k=4)
-
-
-def make_rag_prompt(query: str, relevant_passages: list[str]) -> str:
+def make_rag_prompt(query: str, passages: list[str]) -> str:
     """Generate the RAG prompt
 
     Args:
@@ -69,9 +22,9 @@ def make_rag_prompt(query: str, relevant_passages: list[str]) -> str:
     Returns:
         str: the prompt to pass to the LLM API
     """
-    escaped_passages = " ".join(
-        passage.replace("'", "").replace('"', "").replace("\n", " ")
-        for passage in relevant_passages
+
+    escaped_passages = "\n\n".join(
+        passage.replace("\r", " ").replace("\n", " ") for passage in passages
     )
 
     prompt = (
@@ -80,16 +33,16 @@ def make_rag_prompt(query: str, relevant_passages: list[str]) -> str:
         "being comprehensive, including all relevant background information. However, you "
         "are talking to a non-technical audience, so be sure to break down complicated "
         "concepts and strike a friendly and conversational tone. If the passages are "
-        "irrelevant to the answer, you may ignore them.\n"
-        f"QUESTION: '{query}'\n"
-        f"PASSAGES: '{escaped_passages}'\n\n"
+        "irrelevant to the answer, you may ignore them.\n\n"
+        f"QUESTION: {query}\n\n"
+        f"PASSAGES: {escaped_passages}\n\n"
         "ANSWER:\n"
     )
 
     return prompt
 
 
-def call_llm(prompt: str) -> Generator[str, None, None]:
+def call_llm(user_query: str) -> Generator[str, None, None]:
     """LLM wrapper
 
     Args:
@@ -98,15 +51,16 @@ def call_llm(prompt: str) -> Generator[str, None, None]:
     Yields:
         Generator[str]: LLM response stream
     """
+    passages = st.session_state["vs"].query(user_query)
+    prompt = make_rag_prompt(user_query, passages)
+
     response = st.session_state["llm"].generate_content(prompt, stream=True)
     for chunk in response:
         yield chunk.text
 
 
-# since the image will be public
-# better pass this as a environment variable to the image
-# docker run -e TOKEN=ASDASD -p 8501:8501 streamlit
-# GEMINI_API_TOKEN = "AIzaSyA3zVz7txsa4jttqMCAKlKrtPQwXcGb6J8"
+# UI is heavily inspired from
+# https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps
 st.session_state["prompt_deactivated"] = False
 if not (GEMINI_API_TOKEN := os.getenv("GEMINI_API_TOKEN")):
     st.error(
@@ -136,8 +90,9 @@ if "list_of_models" not in st.session_state:
         st.session_state["list_of_models"] = yaml.safe_load(file)
 if "model" not in st.session_state:
     st.session_state["model"] = DEFAULT_MODEL
-if "store" not in st.session_state:
-    st.session_state["vector_store"] = init_vector_store()
+if "vs" not in st.session_state:
+    st.session_state["vs"] = VectorStore()
+    st.session_state["vs"].load()
 
 with st.chat_message("assistant"):
     st.markdown(
