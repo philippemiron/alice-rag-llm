@@ -1,15 +1,16 @@
-name: Docs
-
+name: docs
 on:
   release:
     types:
       - published
+  pull_request:
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  docs:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -48,3 +49,23 @@ jobs:
         branch: gh-pages
         directory: gh-pages
         force: true
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
