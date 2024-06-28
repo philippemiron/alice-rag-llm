@@ -21,13 +21,13 @@ Built using `Streamlit <https://streamlit.io/>`_, the interface is designed to b
 Document Retrieval (VectorStore)
 --------------------------------
 
-We utilize `LlamaIndex <https://www.llamaindex.ai/>`_ for ingesting the documents, and creating easily creating the vector store. The embedding model used is `BAAI/bge-small-en-v1.5 <https://huggingface.co/BAAI/bge-small-en-v1.5>`_.
-
-Since this RAG POC contains a single book, *Alice's Adventures in Wonderland*, the documents (`src/documents/`) and the embeddings (`src/store`) are generated once and stored in the repository. The vector store is created by running the following command from the root directory:
+We utilize `LlamaIndex <https://www.llamaindex.ai/>`_ for ingesting the documents, and creating easily creating the vector store. The embedding model used is `BAAI/bge-small-en-v1.5 <https://huggingface.co/BAAI/bge-small-en-v1.5>`_. To keep the repository lightweight, the datasets and embeddings are fetched during the Docker image build process. You can perform these steps by running the following command from the root directory:
 
 >>> python src/store.py
 
-The `store.py` module contains two classes: `Book <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.Book>`_ and `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ to to load the document and interact with the vector store. The `Book` class contains the documents information. The `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ class is used to create the vector store, save or load the embeddings, and retrieve the most relevant passages for a given query.
+This command downloads the document from the Gutenberg Project <https://www.gutenberg.org/>_ and stores it in the `src/documents` directory. It also creates and stores the embeddings in the `src/store`` directory.
+
+The `store.py` module contains two classes: `Book <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.Book>`_ and `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ to load the document and interact with the vector store. The `Book` class is used to wraps the document data. The `VectorStore <https://philippemiron.github.io/alice-rag-llm/_autosummary/store.html#store.VectorClass>`_ class is used to create the vector store, save or load the embeddings, and retrieve the most relevant passages for a given query.
 
 When a user provides a query, it is first appended as such:
 
