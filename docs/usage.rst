@@ -30,7 +30,7 @@ To run the container locally and interact with the Alice RAG system, follow thes
 
 .. code-block:: shell
 
-  >>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="TOKEN_STRING" >>> alice-rag-llm
+  >>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="TOKEN_STRING" alice-rag-llm
 
 The application will be accessible locally at `http://0.0.0.0:8501 <http://0.0.0.0:8501>`_.
 

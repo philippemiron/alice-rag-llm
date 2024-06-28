@@ -1,7 +1,4 @@
 # https://docs.streamlit.io/deploy/tutorials/docker
-# docker build -t alice-rag-llm .   
-# docker run -p 8501:8501 -e GEMINI_API_TOKEN="AIzaSyA3zVz7txsa4jttqMCAKlKrtPQwXcGb6J8" alice-rag-llm
-
 FROM python:3.12-slim
 
 WORKDIR /app
