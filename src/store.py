@@ -38,7 +38,10 @@ class Book:
         self.encoding = encoding
 
 
-def load_documents(folder: str, books: list[Book]):
+def load_documents(
+    books: list[Book],
+    folder: str = os.path.join(os.path.dirname(__file__), "documents"),
+):
     """Load documents from a file
 
     Returns:
@@ -60,8 +63,8 @@ class VectorStore:
 
     def __init__(
         self,
-        documents_path: str = "documents",
-        store_path: str = "store",
+        documents_path: str = os.path.join(os.path.dirname(__file__), "documents"),
+        store_path: str = os.path.join(os.path.dirname(__file__), "store"),
     ):
         self.documents_path = documents_path
         self.store_path = store_path
@@ -122,10 +125,8 @@ if __name__ == "__main__":
     books.append(
         Book("Alice in Wonderland", "https://www.gutenberg.org/files/11/11-0.txt")
     )
-    documents_path = os.path.join(os.path.dirname(__file__), "documents")
-    load_documents(documents_path, books)
+    load_documents(books)
 
     # create the vector store
-    store_path = os.path.join(os.path.dirname(__file__), "store")
-    vs = VectorStore(documents_path=documents_path, store_path=store_path)
+    vs = VectorStore()
     vs.save()
