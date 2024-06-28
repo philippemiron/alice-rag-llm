@@ -17,8 +17,10 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 # https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings/
 def init_vector_store() -> VectorIndexRetriever:
-    """
-    Initialize the vector store index
+    """Initialize the vector store
+
+    Returns:
+        VectorIndexRetriever: an object to query the index
     """
     # create a class to generate this and save to the image
     # load book(s)
@@ -46,7 +48,8 @@ def init_vector_store() -> VectorIndexRetriever:
     # https://model.baai.ac.cn/model-detail/100112
     # Represent this sentence for searching relevant passages:
     Settings.embed_model = HuggingFaceEmbedding(
-        model_name="BAAI/bge-small-en-v1.5", cache_folder="bge-small-en-v1.5/"
+        model_name="BAAI/bge-small-en-v1.5",
+        cache_folder=os.path.join(os.path.dirname(__file__), "bge-small-en-v1.5/"),
     )
 
     documents = StorageContext.from_defaults(
@@ -93,7 +96,7 @@ def call_llm(prompt: str) -> Generator[str, None, None]:
         prompt (str): _description_
 
     Yields:
-        _type_: _description_
+        Generator[str]: LLM response stream
     """
     response = st.session_state["llm"].generate_content(prompt, stream=True)
     for chunk in response:
