@@ -36,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: pmiron/alice-rag-llm:latest
+          images: pmiron/alice-rag-llm
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
