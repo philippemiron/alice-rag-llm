@@ -36,3 +36,5 @@ Running from DockerHub
 The container is also available on DockerHub at `pmiron/alice-rag-llm <https://hub.docker.com/repository/docker/pmiron/alice-rag-llm/general>`_. Similarly, you can pull the image from the repository and run it directly on your local machine.
 
 >>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="TOKEN_STRING" pmiron/alice-rag-llm:latest
+
+Note: For optimal performance, the application is available for both `linux/amd64` and `linux/arm64` architectures.
