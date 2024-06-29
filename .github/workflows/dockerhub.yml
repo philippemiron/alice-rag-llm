@@ -3,8 +3,6 @@ name: DockerHub
 on:
   release:
     types: [published]
-  pull_request:
-    branches: [ main ]
 
 env:
   REGISTRY_IMAGE: pmiron/alice-rag-llm
