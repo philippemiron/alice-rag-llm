@@ -135,6 +135,8 @@ idna==3.7
     # via yarl
 imagesize==1.4.1
     # via sphinx
+iniconfig==2.0.0
+    # via pytest
 ipython==8.25.0
 jedi==0.19.1
     # via ipython
@@ -251,6 +253,7 @@ packaging==24.1
     # via huggingface-hub
     # via marshmallow
     # via pydata-sphinx-theme
+    # via pytest
     # via sphinx
     # via streamlit
     # via transformers
@@ -267,6 +270,8 @@ pillow==10.3.0
     # via llama-index-core
     # via sentence-transformers
     # via streamlit
+pluggy==1.5.0
+    # via pytest
 prompt-toolkit==3.0.47
     # via ipython
 proto-plus==1.24.0
@@ -311,6 +316,7 @@ pyparsing==3.1.2
     # via httplib2
 pypdf==4.2.0
     # via llama-index-readers-file
+pytest==8.2.2
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.1

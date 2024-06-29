@@ -101,11 +101,11 @@ class VectorStore:
         Save the vector store locally.
         """
         dataset = SimpleDirectoryReader(self.documents_path).load_data()
-        index = VectorStoreIndex.from_documents(dataset)
+        self.index = VectorStoreIndex.from_documents(dataset)
 
         if not os.path.exists(self.store_path):
             os.makedirs(self.store_path)
-        index.storage_context.persist(persist_dir=self.store_path)
+        self.index.storage_context.persist(persist_dir=self.store_path)
 
     def query(
         self,
