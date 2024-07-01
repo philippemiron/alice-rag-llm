@@ -4,4 +4,4 @@ Alice Retrieval-Augmented Generation (RAG) is a proof of concept application des
 
 This project showcases my ability to implement advanced AI techniques, containerization, CI/CD, documentation, and web-based interaction using Streamlit, all while adhering to best practices in software development and deployment.
 
-Alice RAG stands out by utilizing the LlamaIndex framework to create a vector database from Alice’s Adventures in Wonderland, enabling precise and contextually relevant responses to user queries. The code then employs Gemini models to generate answers based on the retrieved context. The solution is containerized using Docker, ensuring seamless deployment and scalability, and is designed to be cloud-ready, with optional Infrastructure as Code (IaC) scripts for Azure deployment. The project demonstrates a full-stack AI application reflecting my comprehensive skill set in AI engineering, DevOps, and cloud infrastructure management. Through this project, I aim to illustrate my capability to deliver robust, efficient, and user-friendly AI solutions in a professional setting.
+![screnshot-alicerage](img/alicerag.png)

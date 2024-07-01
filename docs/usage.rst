@@ -26,7 +26,7 @@ Follow these steps to run the container locally and interact with the Alice RAG 
 - Ensure you have a valid Gemini API token. This token is required to interact with the Gemini model and can be obtained on the Gemini API `website <https://ai.google.dev/pricing>`_ (free tier available).
 - Use the following command to run the Docker container, which will expose the application on port 8501, set the `GEMINI_API_TOKEN` environment variable, and run the application on the local machine. Note that in a real-world scenario, this token would be stored securely in a secret management system, but since the image is freely available on DockerHub for this POC, it is passed as an environment variable.
 
->>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="TOKEN_STRING" alice-rag-llm
+>>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="SECRET_TOKEN" alice-rag-llm
 
 The application will be accessible locally at `http://0.0.0.0:8501 <http://0.0.0.0:8501>`_.
 
@@ -35,6 +35,6 @@ Running from DockerHub
 
 The container is also available on DockerHub at `pmiron/alice-rag-llm <https://hub.docker.com/repository/docker/pmiron/alice-rag-llm/general>`_. Similarly, you can pull the image from the repository and run it directly on your local machine.
 
->>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="TOKEN_STRING" pmiron/alice-rag-llm:latest
+>>> docker run -p 8501:8501 -e GEMINI_API_TOKEN="SECRET_TOKEN" pmiron/alice-rag-llm:latest
 
 Note: For optimal performance, the application is available for both `linux/amd64` and `linux/arm64` architectures.
