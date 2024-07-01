@@ -11,6 +11,6 @@ To run the image, you have to map port `8501` to a local port and set the `GEMIN
 ```
 docker run -p 8501:8501 -e GEMINI_API_TOKEN=$GEMINI_API_KEY pmiron/alice-rag-llm:latest
 ```
-will launch a Streamlit application locally, i.e. at [http://0.0.0.0:8501](http://0.0.0.0:8501). 
+will launch a Streamlit application locally, i.e. at [http://0.0.0.0:8501](http://0.0.0.0:8501). Below a screenshot of an interaction with the application.
 
 ![screnshot-alicerage](img/alicerag.png)
