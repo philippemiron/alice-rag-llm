@@ -20,6 +20,7 @@ Getting started
 
    description
    usage
+   infra
 
 Reference
 ---------
