@@ -14,6 +14,7 @@ Getting started
 
 * :doc:`description`
 * :doc:`usage`
+* :doc:`infra`
 
 .. toctree::
    :hidden:
