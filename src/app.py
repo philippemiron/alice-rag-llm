@@ -66,12 +66,14 @@ def call_llm(user_query: str) -> Generator[str, None, None]:
 
     # RAG config
     config = genai.GenerationConfig(
-        temperature=0.3, # [0, 1] lower values are more deterministic
+        temperature=0.3,  # [0, 1] lower values are more deterministic
         top_p=0.9,
         top_k=20,  # decrease from 40 to 20 to make model more focused on high probability token
     )
 
-    response = st.session_state["llm"].generate_content(prompt, generation_config=config, stream=True)
+    response = st.session_state["llm"].generate_content(
+        prompt, generation_config=config, stream=True
+    )
     for chunk in response:
         yield chunk.text
 
