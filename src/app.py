@@ -79,7 +79,7 @@ if not (GEMINI_API_TOKEN := os.getenv("GEMINI_API_TOKEN")):
     )
     st.session_state["prompt_deactivated"] = True
 
-genai.configure(api_key=GEMINI_API_TOKEN)
+genai.configure(api_key=GEMINI_API_TOKEN, transport="rest")
 
 
 hide_decoration_bar_style = """
