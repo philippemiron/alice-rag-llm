@@ -38,7 +38,7 @@ class Book:
         self.title = title
         self.url = url
         self.filename = (
-            filename if filename else f"{self.title.lower().replace(" ", "_")}.txt"
+            filename if filename else f"{self.title.lower().replace(' ', '_')}.txt"
         )
         self.encoding = encoding
 
