@@ -23,7 +23,7 @@ Document Retrieval (vector database)
 
 We utilize `LlamaIndex <https://www.llamaindex.ai/>`_ for ingesting the documents, and creating the vector store. The embedding model used is `BAAI/bge-small-en-v1.5 <https://huggingface.co/BAAI/bge-small-en-v1.5>`_. To keep the repository lightweight, the datasets and embeddings are fetched during the Docker image build process. These steps can be performed using the following command:
 
->>> python src/store.py
+>>> uv run python src/store.py
 
 This command downloads the document from the `Gutenberg Project <https://www.gutenberg.org/>_` and stores it in `src/documents/`. It also creates and stores the embeddings in `src/store/`.
 
