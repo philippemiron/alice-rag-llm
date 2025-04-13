@@ -3,6 +3,7 @@ Functions for Streamlit applications
 """
 
 import os
+import torch
 import yaml
 from typing import Generator
 
@@ -10,6 +11,9 @@ import google.generativeai as genai
 import streamlit as st
 
 from store import VectorStore
+
+# https://github.com/VikParuchuri/marker/issues/442#issuecomment-2636393925
+torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)]
 
 
 def make_rag_prompt(user_query: str, passages: list[str]) -> str:
