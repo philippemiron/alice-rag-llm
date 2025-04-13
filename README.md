@@ -14,3 +14,5 @@ docker run -p 8501:8501 -e GEMINI_API_TOKEN=$GEMINI_API_KEY pmiron/alice-rag-llm
 will launch a Streamlit application locally, i.e. at [http://0.0.0.0:8501](http://0.0.0.0:8501). Below a screenshot of an interaction with the application.
 
 ![screnshot-alicerage](img/alicerag.png)
+
+docker run -p 8501:8501 -e GEMINI_API_TOKEN=$GEMINI_API_KEY aliceragllm:latest
