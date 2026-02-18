@@ -84,8 +84,7 @@ Large Language Model
 
 When using Alice RAG, the user can choose from three Gemini's model. Gemini models were selected because Google offer limited free tier API. The models available are:
 
-- Gemini 1.0 Pro
-- Gemini 1.5 Pro
-- Gemini 1.5 Flash
+- Gemini 2.5 Pro
+- Gemini 2.5 Flash
 
-The first model, from the previous generation, is slightly faster but provides simpler and less accurate answers compared to the newer models. The two latest models (1.5 Pro and Flash) offer higher accuracy but are generally more expensive and slightly slower.  The default model is set to `Gemini 1.5 Flash`, which provides fast and versatile performance across diverse variety of tasks. The user can change the model on the left sidebar of the interface to optimize their experience.
+The first model, from the previous generation, is slightly faster but provides simpler and less accurate answers compared to the newer models. The two latest models (Pro and Flash) offer higher accuracy but are generally more expensive and slightly slower.  The default model is set to `Gemini 2.5 Flash`, which provides fast and versatile performance across diverse variety of tasks. The user can change the model on the left sidebar of the interface to optimize their experience.
