@@ -105,7 +105,7 @@ st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 st.title("Alice RAG")
 
 # setup the session state
-DEFAULT_MODEL = "Gemini 1.5 Flash"
+DEFAULT_MODEL = "Gemini 2.5 Flash"
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "list_of_models" not in st.session_state:
