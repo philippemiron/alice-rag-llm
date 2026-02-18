@@ -26,4 +26,4 @@ dev = [
 # clean: rm -Rf docs/_build/ docs/_autosummary/ src/store src/documents
 # docs: uv run sphinx-build -M html docs docs/_build -W --keep-going
 # embeddings: uv run python src/store.py
-# uv run pytest testsuv tree --outdated
+# uv run pytest tests
