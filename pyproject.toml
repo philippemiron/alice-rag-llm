@@ -18,6 +18,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "ruff>=0.15.1",
     "sphinx>=9.0.4",
     "sphinx-book-theme>=1.1.4",
     "sphinx-copybutton>=0.5.2",
