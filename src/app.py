@@ -7,7 +7,8 @@ import torch
 import yaml
 from typing import Generator
 
-import google.generativeai as genai
+import google.genai as genai
+from google.genai import types
 import streamlit as st
 
 from store import VectorStore
@@ -69,17 +70,21 @@ def call_llm(user_query: str) -> Generator[str, None, None]:
     prompt = make_rag_prompt(user_query, passages)
 
     # RAG config
-    config = genai.GenerationConfig(
+    config = types.GenerateContentConfig(
         temperature=0.3,  # [0, 1] lower values are more deterministic
         top_p=0.9,
         top_k=20,  # decrease from 40 to 20 to make model more focused on high probability token
     )
 
-    response = st.session_state["llm"].generate_content(
-        prompt, generation_config=config, stream=True
+    response = st.session_state["client"].models.generate_content_stream(
+        model=st.session_state["model_name"],
+        contents=prompt,
+        config=config,
     )
+
     for chunk in response:
-        yield chunk.text
+        if chunk.text:
+            yield chunk.text
 
 
 # UI is heavily inspired from
@@ -92,7 +97,8 @@ if not (GEMINI_API_TOKEN := os.getenv("GEMINI_API_TOKEN")):
     )
     st.session_state["prompt_deactivated"] = True
 
-genai.configure(api_key=GEMINI_API_TOKEN, transport="rest")
+if "client" not in st.session_state:
+    st.session_state["client"] = genai.Client(api_key=GEMINI_API_TOKEN)
 
 
 hide_decoration_bar_style = """
@@ -105,7 +111,7 @@ st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 st.title("Alice RAG")
 
 # setup the session state
-DEFAULT_MODEL = "Gemini 1.5 Flash"
+DEFAULT_MODEL = "Gemini 2.5 Flash"
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "list_of_models" not in st.session_state:
@@ -113,6 +119,10 @@ if "list_of_models" not in st.session_state:
         st.session_state["list_of_models"] = yaml.safe_load(file)
 if "model" not in st.session_state:
     st.session_state["model"] = DEFAULT_MODEL
+if "model_name" not in st.session_state:
+    st.session_state["model_name"] = st.session_state["list_of_models"][DEFAULT_MODEL][
+        "model_name"
+    ]
 if "vs" not in st.session_state:
     st.session_state["vs"] = VectorStore()
     st.session_state["vs"].load()
@@ -152,9 +162,10 @@ with st.sidebar:
         ],
     )
 
-    # Initialize the selected model
-    name = st.session_state["list_of_models"][st.session_state["model"]]["model_name"]
-    st.session_state["llm"] = genai.GenerativeModel(model_name=name)
+    # Store the selected model name for API calls
+    st.session_state["model_name"] = st.session_state["list_of_models"][
+        st.session_state["model"]
+    ]["model_name"]
 
     if st.button("Clear Chat"):
         st.session_state["messages"] = []
