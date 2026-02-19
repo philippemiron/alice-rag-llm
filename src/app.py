@@ -89,84 +89,88 @@ def call_llm(user_query: str) -> Generator[str, None, None]:
 
 # UI is heavily inspired from
 # https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps
-st.session_state["prompt_deactivated"] = False
-if not (GEMINI_API_TOKEN := os.getenv("GEMINI_API_TOKEN")):
-    st.error(
-        "GEMINI_API_TOKEN environment variable must be provided when running the container.",
-        icon="🚨",
-    )
-    st.session_state["prompt_deactivated"] = True
+def main() -> None:
+    st.session_state["prompt_deactivated"] = False
+    if not (GEMINI_API_TOKEN := os.getenv("GEMINI_API_TOKEN")):
+        st.error(
+            "GEMINI_API_TOKEN environment variable must be provided when running the container.",
+            icon="🚨",
+        )
+        st.session_state["prompt_deactivated"] = True
 
-if "client" not in st.session_state:
-    st.session_state["client"] = genai.Client(api_key=GEMINI_API_TOKEN)
+    if "client" not in st.session_state:
+        st.session_state["client"] = genai.Client(api_key=GEMINI_API_TOKEN)
 
+    hide_decoration_bar_style = """
+        <style>
+            header {visibility: hidden;}
+        </style>
+    """
+    st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
-hide_decoration_bar_style = """
-    <style>
-        header {visibility: hidden;}
-    </style>
-"""
-st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
+    st.title("Alice RAG")
 
-st.title("Alice RAG")
-
-# setup the session state
-DEFAULT_MODEL = "Gemini 2.5 Flash"
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "list_of_models" not in st.session_state:
-    with open(os.path.join(os.path.dirname(__file__), "config.yaml"), "r") as file:
-        st.session_state["list_of_models"] = yaml.safe_load(file)
-if "model" not in st.session_state:
-    st.session_state["model"] = DEFAULT_MODEL
-if "model_name" not in st.session_state:
-    st.session_state["model_name"] = st.session_state["list_of_models"][DEFAULT_MODEL][
-        "model_name"
-    ]
-if "vs" not in st.session_state:
-    st.session_state["vs"] = VectorStore()
-    st.session_state["vs"].load()
-
-with st.chat_message("assistant"):
-    st.markdown(
-        "Hello there! I recently read *Alice's Adventures in Wonderland*, what a great book! "
-        "I can answer any questions you might have about it. "
-        "Please enter your question in the prompt area below."
-    )
-for message in st.session_state["messages"]:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-if prompt := st.chat_input(
-    "Prompt",
-    disabled=st.session_state["prompt_deactivated"],
-):
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    st.session_state["messages"].append({"role": "user", "content": prompt})
+    # setup the session state
+    DEFAULT_MODEL = "Gemini 2.5 Flash"
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    if "list_of_models" not in st.session_state:
+        with open(os.path.join(os.path.dirname(__file__), "config.yaml"), "r") as file:
+            st.session_state["list_of_models"] = yaml.safe_load(file)
+    if "model" not in st.session_state:
+        st.session_state["model"] = DEFAULT_MODEL
+    if "model_name" not in st.session_state:
+        st.session_state["model_name"] = st.session_state["list_of_models"][
+            DEFAULT_MODEL
+        ]["model_name"]
+    if "vs" not in st.session_state:
+        st.session_state["vs"] = VectorStore()
+        st.session_state["vs"].load()
 
     with st.chat_message("assistant"):
-        stream = call_llm(prompt)
-        response = st.write_stream(stream)
+        st.markdown(
+            "Hello there! I recently read *Alice's Adventures in Wonderland*, what a great book! "
+            "I can answer any questions you might have about it. "
+            "Please enter your question in the prompt area below."
+        )
+    for message in st.session_state["messages"]:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    st.session_state["messages"].append({"role": "assistant", "content": response})
+    if prompt := st.chat_input(
+        "Prompt",
+        disabled=st.session_state["prompt_deactivated"],
+    ):
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        st.session_state["messages"].append({"role": "user", "content": prompt})
 
-with st.sidebar:
-    models = [k for k in st.session_state["list_of_models"]]
-    st.session_state["model"] = st.radio(
-        "Available LLMs:",
-        models,
-        index=models.index(DEFAULT_MODEL),
-        captions=[
-            m["description"] for m in st.session_state["list_of_models"].values()
-        ],
-    )
+        with st.chat_message("assistant"):
+            stream = call_llm(prompt)
+            response = st.write_stream(stream)
 
-    # Store the selected model name for API calls
-    st.session_state["model_name"] = st.session_state["list_of_models"][
-        st.session_state["model"]
-    ]["model_name"]
+        st.session_state["messages"].append({"role": "assistant", "content": response})
 
-    if st.button("Clear Chat"):
-        st.session_state["messages"] = []
-        st.rerun()
+    with st.sidebar:
+        models = [k for k in st.session_state["list_of_models"]]
+        st.session_state["model"] = st.radio(
+            "Available LLMs:",
+            models,
+            index=models.index(DEFAULT_MODEL),
+            captions=[
+                m["description"] for m in st.session_state["list_of_models"].values()
+            ],
+        )
+
+        # Store the selected model name for API calls
+        st.session_state["model_name"] = st.session_state["list_of_models"][
+            st.session_state["model"]
+        ]["model_name"]
+
+        if st.button("Clear Chat"):
+            st.session_state["messages"] = []
+            st.rerun()
+
+
+if __name__ == "__main__":
+    main()
