@@ -11,15 +11,14 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   unittest:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
-        python-version: ["3.12"]
+        os: [ "ubuntu-latest", "macos-latest" ]
+        python-version: [ "3.11", "3.12", "3.13" ]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
